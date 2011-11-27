@@ -4,8 +4,9 @@
 #viewer {
   background-color: #929292;
   font-family: 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;
-  margin: 0px;
+  /*margin: 0px;*/
   padding: 0px;
+  /*position:absolute;*/
 }
 
 [hidden] {
@@ -35,7 +36,7 @@
 }
 
 #controls2 > button {
-  line-height: 16px;
+  line-height: 10px;
 }
 
 #controls2 > button > img {
@@ -220,11 +221,14 @@ canvas {
 }
 
 #viewer {
-  overflow:auto;
+  /*overflow:auto;*/
+  margin: 44px 0px 0px 0px;
+  margin-right:12.5em;
+  padding: 8px 0px;
+  position:fixed;
   height:100%;
   width:100%;
-  margin: 44px 0px 0px;
-  padding: 8px 0px;
+  text-align:center;
 }
 
 #sidebarView canvas:hover {

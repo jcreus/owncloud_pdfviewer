@@ -1,10 +1,12 @@
 /* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
+/* FROM PDF.JS, ADAPTED */
+
 'use strict';
 
 var kDefaultURL = 'compressed.tracemonkey-pldi-09.pdf';
-var kDefaultScale = 1.5;
+var kDefaultScale = 1.25;
 var kDefaultScaleDelta = 1.1;
 var kCacheSize = 20;
 var kCssUnits = 96.0 / 72.0;
@@ -61,9 +63,9 @@ var PDFView = {
     }
 
     var currentPage = this.pages[this.page - 1];
-    var pageWidthScale = (document.getElementById("viewer").innerWidth - kScrollbarPadding) /
+    var pageWidthScale = ($("#content").width() - kScrollbarPadding) /
                           currentPage.width / kCssUnits;
-    var pageHeightScale = (document.getElementById("viewer").innerHeight - kScrollbarPadding) /
+    var pageHeightScale = ($("#content").height() - kScrollbarPadding) /
                            currentPage.height / kCssUnits;
     if ('page-width' == value)
       this.setScale(pageWidthScale, resetAutoSettings);
@@ -120,7 +122,6 @@ var PDFView = {
 
   open: function pdfViewOpen(url, scale) {
     document.title = this.url = url;
-
     var self = this;
     PDFJS.getPdf(
       {
@@ -196,15 +197,6 @@ var PDFView = {
     var loadingIndicator = document.getElementById('loading');
     loadingIndicator.setAttribute('hidden', 'true');
 
-    var sidebar = document.getElementById('sidebarView');
-    sidebar.parentNode.scrollTop = 0;
-
-    while (sidebar.hasChildNodes())
-      sidebar.removeChild(sidebar.lastChild);
-
-    if ('_loadingInterval' in sidebar)
-      clearInterval(sidebar._loadingInterval);
-
     var container = document.getElementById('viewer');
     while (container.hasChildNodes())
       container.removeChild(container.lastChild);
@@ -221,29 +213,30 @@ var PDFView = {
       var page = pdf.getPage(i);
       pages.push(new PageView(container, page, i, page.width, page.height,
                               page.stats, this.navigateTo.bind(this)));
-      thumbnails.push(new ThumbnailView(sidebar, page, i,
-                                        page.width / page.height));
+      /*thumbnails.push(new ThumbnailView(sidebar, page, i,
+                                        page.width / page.height));*/
       var pageRef = page.ref;
       pagesRefMap[pageRef.num + ' ' + pageRef.gen + ' R'] = i;
     }
 
     this.setScale(scale || kDefaultScale, true);
 
-    this.pagesRefMap = pagesRefMap;
+    /*this.pagesRefMap = pagesRefMap;
     this.destinations = pdf.catalog.destinations;
     if (pdf.catalog.documentOutline) {
       this.outline = new DocumentOutlineView(pdf.catalog.documentOutline);
       var outlineSwitchButton = document.getElementById('outlineSwitch');
       outlineSwitchButton.removeAttribute('disabled');
       this.switchSidebarView('outline');
-    }
+    }*/
+    this.page = 1;
 
-    if (this.initialBookmark) {
+    /*if (this.initialBookmark) {
       this.setHash(this.initialBookmark);
       this.initialBookmark = null;
     }
     else
-      this.page = 1;
+      this.page = 1;*/
   },
 
   setHash: function pdfViewSetHash(hash) {
@@ -283,7 +276,7 @@ var PDFView = {
       PDFView.navigateTo(unescape(hash));
   },
 
-  switchSidebarView: function pdfViewSwitchSidebarView(view) {
+  /*switchSidebarView: function pdfViewSwitchSidebarView(view) {
     var thumbsScrollView = document.getElementById('sidebarScrollView');
     var outlineScrollView = document.getElementById('outlineScrollView');
     var thumbsSwitchButton = document.getElementById('thumbsSwitch');
@@ -302,7 +295,7 @@ var PDFView = {
         outlineSwitchButton.setAttribute('data-selected', true);
         break;
     }
-  },
+  },*/
 
   getVisiblePages: function pdfViewGetVisiblePages() {
     var pages = this.pages;
@@ -355,7 +348,12 @@ var PageView = function pageView(container, content, id, pageWidth, pageHeight,
   this.update = function pageViewUpdate(scale) {
     this.scale = scale || this.scale;
     div.style.width = (this.width * this.scale) + 'px';
+    
     div.style.height = (this.height * this.scale) + 'px';
+
+    var container = document.getElementById('viewer');
+    container.style.left = (document.getElementById("content").offsetWidth-(this.width))/2 + 'px';
+    console.log(document.getElementById("content").offsetWidth,this.width);
 
     while (div.hasChildNodes())
       div.removeChild(div.lastChild);
@@ -592,7 +590,8 @@ var DocumentOutlineView = function documentOutlineView(outline) {
 function webViewerLoad(url) {
   var scale = kDefaultScale;
   console.log("obrint");
-  PDFView.open(url, parseFloat(scale));
+  console.log(PDFView.parseScale(scale));
+  PDFView.open(url, parseFloat(PDFView.parseScale(scale)));
 
   if (!window.File || !window.FileReader || !window.FileList || !window.Blob)
     document.getElementById('fileInput').setAttribute('hidden', 'true');
@@ -629,7 +628,6 @@ function updateViewarea() {
   var topLeft = currentPage.getPagePoint(window.pageXOffset,
     window.pageYOffset - firstPage.y - kViewerTopMargin);
   pdfOpenParams += ',' + Math.round(topLeft.x) + ',' + Math.round(topLeft.y);
-  document.getElementById('viewBookmark').href = pdfOpenParams;
 }
 
 window.addEventListener('scroll', function webViewerScroll(evt) {
@@ -672,23 +670,7 @@ window.addEventListener('change', function webViewerChange(evt) {
   document.title = file.name;
 
   // URL does not reflect proper document location - hiding some icons.
-  document.getElementById('viewBookmark').setAttribute('hidden', 'true');
   document.getElementById('download').setAttribute('hidden', 'true');
-}, true);
-
-window.addEventListener('transitionend', function webViewerTransitionend(evt) {
-  var pageIndex = 0;
-  var pagesCount = PDFView.pages.length;
-
-  var container = document.getElementById('sidebarView');
-  container._interval = window.setInterval(function interval() {
-    if (pageIndex >= pagesCount) {
-      window.clearInterval(container._interval);
-      return;
-    }
-
-    PDFView.thumbnails[pageIndex++].draw();
-  }, 500);
 }, true);
 
 window.addEventListener('scalechange', function scalechange(evt) {

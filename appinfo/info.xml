@@ -3,7 +3,7 @@
 	<id>files_pdfviewer</id>
 	<name>PDF viewer (pdfjs-based)</name>
 	<version>0.1</version>
-	<licence>MPL</licence>
+	<licence>GPL</licence>
 	<author>Joan Creus</author>
 	<require>2</require>
 	<default_enable/>
