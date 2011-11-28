@@ -122,6 +122,7 @@ var PDFView = {
 
   open: function pdfViewOpen(url, scale) {
     document.title = PDFView.Ptitle;
+    this.url = url;
     var self = this;
     PDFJS.getPdf(
       {
