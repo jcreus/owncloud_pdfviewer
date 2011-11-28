@@ -121,7 +121,7 @@ var PDFView = {
   },
 
   open: function pdfViewOpen(url, scale) {
-    document.title = this.url = url;
+    document.title = PDFView.Ptitle;
     var self = this;
     PDFJS.getPdf(
       {
@@ -497,7 +497,6 @@ var PageView = function pageView(container, content, id, pageWidth, pageHeight,
     var t1 = stats.compile, t2 = stats.fonts, t3 = stats.render;
     var str = 'Time to compile/fonts/render: ' +
               (t1 - stats.begin) + '/' + (t2 - t1) + '/' + (t3 - t2) + ' ms';
-    document.getElementById('info').innerHTML = str;
   };
 };
 
@@ -665,7 +664,7 @@ window.addEventListener('change', function webViewerChange(evt) {
   var file = files[0];
   fileReader.readAsBinaryString(file);
 
-  document.title = file.name;
+  document.title = PDFView.Ptitle;
 
   // URL does not reflect proper document location - hiding some icons.
   document.getElementById('download').setAttribute('hidden', 'true');

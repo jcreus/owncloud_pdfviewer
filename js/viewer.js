@@ -1,4 +1,14 @@
 viewer_is_shown = false;
+function hidePDFviewer() {
+  viewer_is_shown = false;
+  console.log("CLOSING");
+  $('table').show();
+  console.log("tableshown");
+  $('#controls').html(oldcode);
+  $("#viewer").remove();
+  $("#loading").remove()
+  $("#controls").css({top:"3.5em",height:"2.8em",zIndex:200});
+}
 function showPDFviewer(dir,filename){
 	if(!viewer_is_shown){
                 $("#editor").hide();
@@ -7,16 +17,18 @@ function showPDFviewer(dir,filename){
                 console.log(url);
                 $('table').hide();
                 function im(path) { return OC.filePath('files_pdfviewer','js','pdfjs/web/images/'+path); }
-                $("#controls").empty()
-                $("#controls").html('&nbsp;&nbsp;<div id="controls2" style="display:inline;">      <button id="previous" onclick="PDFView.page--;" oncontextmenu="return false;">        <img src="'+im('go-up.svg')+'" align="top" height="10"/>        Previous      </button>      <button id="next" onclick="PDFView.page++;" oncontextmenu="return false;">        <img src="'+im('go-down.svg')+'" align="top" height="10"/>        Next      </button>      <div class="separator"></div>      <input style="width:25px;" type="number" id="pageNumber" onchange="PDFView.page = this.value;" value="1" size="4" min="1" />      <span>/</span>      <span id="numPages">--</span>      <div class="separator"></div>      <button id="zoomOut" title="Zoom Out" onclick="PDFView.zoomOut();" oncontextmenu="return false;">        <img src="'+im('zoom-out.svg')+'" align="top" height="10"/>      </button>      <button id="zoomIn" title="Zoom In" onclick="PDFView.zoomIn();" oncontextmenu="return false;">        <img src="'+im('zoom-in.svg')+'" align="top" height="10"/>      </button>      <div class="separator"></div>      <select id="scaleSelect" onchange="PDFView.parseScale(this.value);" oncontextmenu="return false;">        <option id="customScaleOption" value="custom"></option>        <option value="0.5">50%</option>        <option value="0.75">75%</option>        <option value="1">100%</option>        <option value="1.25" selected="selected">125%</option>        <option value="1.5">150%</option>        <option value="2">200%</option>        <option id="pageWidthOption" value="page-width">Page Width</option>        <option id="pageFitOption" value="page-fit">Page Fit</option>      </select>      <div class="separator"></div>      <button id="print" onclick="window.print();" oncontextmenu="return false;">        <img src="'+im('document-print.svg')+'" align="top" height="10"/>        Print      </button>      <button id="download" title="Download" onclick="PDFView.download();" oncontextmenu="return false;">        <img src="'+im('download.svg')+'" align="top" height="10"/>        Download      </button>       <span id="info">--</span>    </div>');
-                    $("#content").html($("#content").html()+'<div id="loading">Loading... 0%</div>    <div id="viewer"></div>');
-                    $("#controls").css({top:"0px",height:"3.5em"});
-                  
+                oldcode = $("#controls").html();
+                $("#controls").empty();
+                $("#controls").html('&nbsp;&nbsp;<div id="controls2" style="display:inline;">      <button id="previous" onclick="PDFView.page--;" oncontextmenu="return false;">        <img src="'+im('go-up.svg')+'" align="top" height="10"/>        Previous      </button>      <button id="next" onclick="PDFView.page++;" oncontextmenu="return false;">        <img src="'+im('go-down.svg')+'" align="top" height="10"/>        Next      </button>      <div class="separator"></div>      <input style="width:25px;" type="number" id="pageNumber" onchange="PDFView.page = this.value;" value="1" size="4" min="1" />      <span>/</span>      <span id="numPages">--</span>      <div class="separator"></div>      <button id="zoomOut" title="Zoom Out" onclick="PDFView.zoomOut();" oncontextmenu="return false;">        <img src="'+im('zoom-out.svg')+'" align="top" height="10"/>      </button>      <button id="zoomIn" title="Zoom In" onclick="PDFView.zoomIn();" oncontextmenu="return false;">        <img src="'+im('zoom-in.svg')+'" align="top" height="10"/>      </button>      <div class="separator"></div>      <select id="scaleSelect" onchange="PDFView.parseScale(this.value);" oncontextmenu="return false;">        <option id="customScaleOption" value="custom"></option>        <option value="0.5">50%</option>        <option value="0.75">75%</option>        <option value="1">100%</option>        <option value="1.25" selected="selected">125%</option>        <option value="1.5">150%</option>        <option value="2">200%</option>        <option id="pageWidthOption" value="page-width">Page Width</option>        <option id="pageFitOption" value="page-fit">Page Fit</option>      </select>      <div class="separator"></div>      <button id="print" onclick="window.print();" oncontextmenu="return false;">        <img src="'+im('document-print.svg')+'" align="top" height="10"/>        Print      </button>      <button id="download" title="Download" onclick="PDFView.download();" oncontextmenu="return false;">        <img src="'+im('download.svg')+'" align="top" height="10"/>        Download      </button><button id="close" title="Close viewer" onclick="hidePDFviewer();" oncontextmenu="return false;">x</button>       <span id="info">--</span>    </div>');
+                    oldcontent = $("#content").html();
+                    $("#content").html(oldcontent+'<div id="loading">Loading... 0%</div>    <div id="viewer"></div>');
+                    $("#controls").css({top:"0px",height:"3.5em",zIndex:200});
+                  PDFView.Ptitle = filename;
                   PDFView.open(url,1.00);
                   $("#pageWidthOption").attr("selected","selected");
-                  $("header,#apps").css({opacity:0.25});
-                  document.getElementsByTagName("nav")[0].style.background = "rgba(238,238,238,.50)";
-                  $("header").css({zIndex:10000000});
+                  //$("header,#apps").css({opacity:0.25});
+                  //document.getElementsByTagName("nav")[0].style.background = "rgba(238,238,238,.50)";
+                  $("header").css({zIndex:0});
                   viewer_is_shown = true;
 	}
 }
