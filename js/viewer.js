@@ -1,20 +1,17 @@
 viewer_is_shown = false;
 function hidePDFviewer() {
   viewer_is_shown = false;
-  console.log("CLOSING");
   $('table').show();
-  console.log("tableshown");
   $('#controls').html(oldcode);
   $("#viewer").remove();
   $("#loading").remove()
   $("#controls").css({top:"3.5em",height:"2.8em",zIndex:200});
+  document.title = lastTitle;
 }
 function showPDFviewer(dir,filename){
 	if(!viewer_is_shown){
                 $("#editor").hide();
                 var url = OC.filePath('files','ajax','download.php')+'?files='+encodeURIComponent(filename)+"&dir="+encodeURIComponent(dir);
-                $.get(OC.filePath('files_pdfviewer','ajax','setlastopened.php')+'?f='+encodeURIComponent(filename)+"&d="+encodeURIComponent(dir));
-                console.log(url);
                 $('table').hide();
                 function im(path) { return OC.filePath('files_pdfviewer','js','pdfjs/web/images/'+path); }
                 oldcode = $("#controls").html();
@@ -23,11 +20,10 @@ function showPDFviewer(dir,filename){
                     oldcontent = $("#content").html();
                     $("#content").html(oldcontent+'<div id="loading">Loading... 0%</div>    <div id="viewer"></div>');
                     $("#controls").css({top:"0px",height:"3.5em",zIndex:200});
+                  lastTitle = document.title;
                   PDFView.Ptitle = filename;
                   PDFView.open(url,1.00);
                   $("#pageWidthOption").attr("selected","selected");
-                  //$("header,#apps").css({opacity:0.25});
-                  //document.getElementsByTagName("nav")[0].style.background = "rgba(238,238,238,.50)";
                   $("header").css({zIndex:0});
                   viewer_is_shown = true;
 	}
@@ -44,11 +40,6 @@ $(document).ready(function(){
 		});
 		FileActions.setDefault('application/pdf','Edit');
 	}
-        $("#navigation .active").after(extrahtml);
-        $("#navigation .active").html("<div style=\"float:right;\">&#x25BC;</div>"+$("#navigation .active").html());
-        $("#navigation .active, #extra").hover(function () {
-          $("#extra").show();
-        },function () {$("#extra").hide();});
 	OC.search.customResults.Text=function(row,item){
 		var text=item.link.substr(item.link.indexOf('file=')+5);
 		var a=row.find('a');
